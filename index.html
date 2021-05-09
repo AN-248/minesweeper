@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>MINESWEEPER</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/destyle.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+
+<h1>MINESWEEPER</h1>
+
+<div class="settings before" id="settings">
+    <h2 class="settings_title">Settings</h2>
+
+    <div class="settings_content">
+        <div class="settings_content_size">
+            <div class="sizeItem">
+                <label class="el_label" for="inputW">Width</label>
+                <span class="el_separator">:</span>
+                <input class="el_input" type="number" step="1" min="1" name="width" value="10" id="inputW">
+            </div>
+
+            <div class="el_multiply">×</div>
+
+            <div class="sizeItem">
+                <label class="el_label" for="inputH">Height</label>
+                <span class="el_separator">:</span>
+                <input class="el_input" type="number" step="1" min="1" name="height" value="10" id="inputH">
+            </div>
+        </div>
+
+        <div class="settings_content_bomb">
+            <label class="el_bombLabel" for="inputB">Bomb</label>
+            <span class="el_separator">×</span>
+            <input class="el_input" type="number" step="1" min="1" name="bomb" value="10" id="inputB">
+        </div>
+    </div>
+</div>
+
+<div class="start before">
+    <button type="button" class="start_btn" id="startBtn">GAME START</button>
+</div>
+
+<div class="status playing">
+    <div class="status_content">
+        <div class="status_item">
+            <span class="el_number" id="statusW">6</span>
+            <span class="el_multiply">×</span>
+            <span class="el_number" id="statusH">6</span>
+        </div>
+
+        <div class="status_item">
+            <span class="el_flag">Flag</span>
+            <span class="el_multiply">×</span>
+            <span class="el_number" id="statusF">3</span>
+        </div>
+
+        <div class="status_item">
+            <span class="el_time">
+                <span id="timerM">00</span>:<span id="timerS">00</span>
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="game playing">
+    <table class="game_body" id="gameBody"></table>
+</div>
+
+<div class="operation" id="operation">
+    <div class="operation_content">
+        <button class="el_btn" id="flagBtn">Flag</button>
+        <button class="el_btn" id="cancelBtn">Cancel</button>
+    </div>
+</div>
+
+<div class="result after">
+    <div class="result_msg" id="resultMsg"></div>
+</div>
+
+<div class="newGame after">
+    <button class="newGame_btn" id="newGameBtn">New Game</button>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,397 @@
+$fogWhite: #eee;
+$cloudGray: #e5e5e5;
+$lightBlack: #191919;
+
+$shineYellow: #fff394;
+$warmOrange: #ffcd82;
+$sunCoral: #ffb282;
+$breakRed: #ff8e68;
+$coldSky: #acebe1;
+$shallowBlue: #81d1ce;
+$lakeSurface: #64bad2;
+$steelBlue: #498eb6;
+
+$colors: (
+        1: $steelBlue,
+        2: $lakeSurface,
+        3: $shallowBlue,
+        4: $sunCoral,
+        5: $breakRed,
+        6: $warmOrange,
+        7: $coldSky,
+        8: $shineYellow
+);
+
+$backgrounds: (
+        night: #141418,
+        silentNight: #181620,
+        deepNight: rgba(24,22,33,1),
+        midNight: rgba(18,22,43,1),
+        lateNight: rgba(13,34,70,1),
+        dayBreak: rgba(12,56,100,1),
+        sunrise: rgba(12,90,140,1),
+        earlyMorning: $steelBlue,
+        morning: linear-gradient(180deg, rgba(73,142,182,1) 0%, rgba(183,223,194,1) 75%, rgba(255,225,178,1) 100%)
+);
+
+* {
+  font-family: "Arial Black", sans-serif;
+  color: $fogWhite;
+  transition: background 1s, color .6s, opacity .6s;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  background: black;
+
+  @each $key, $back in $backgrounds {
+    &.is-#{$key} {
+      background: $back;
+      background-size: cover;
+    }
+  }
+}
+
+h1 {
+  margin-top: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1.2px;
+  text-align: center;
+  text-shadow: 0 0 3px $shineYellow;
+}
+
+.playing, .after {
+  display: none;
+}
+
+.settings {
+  margin: 40px auto 0;
+  width: 100%;
+  max-width: 300px;
+
+  &_title {
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  &_content {
+    width: 100%;
+    margin-top: 30px;
+
+    &_size {
+      display: flex;
+      margin: 10px auto 0;
+      text-align: center;
+
+      .sizeItem {
+        width: 100%;
+
+        .el_separator {
+          display: inline-block;
+          margin: 0 2px;
+        }
+
+        .el_input {
+          display: block;
+          max-width: 100px;
+          margin: 4px auto 0;
+          border-bottom: 1px solid $fogWhite;
+        }
+
+        &:hover {
+          text-shadow: 0 0 2px $shineYellow;
+        }
+      }
+
+      .el_multiply {
+        margin: auto 0;
+      }
+    }
+
+    &_bomb {
+      margin: 30px auto 0;
+      text-align: center;
+
+      .el_input {
+        max-width: 100px;
+        border-bottom: 1px solid $fogWhite;
+      }
+
+      &:hover {
+        text-shadow: 0 0 4px $breakRed;
+      }
+    }
+
+  }
+}
+
+.start {
+  margin-top: 50px;
+  text-align: center;
+
+  &_btn {
+    padding: 4px 20px;
+    border: 1px solid $fogWhite;
+    transition: background .2s, color .2s;
+
+    &:hover:not(:disabled) {
+      color: black;
+      background: $fogWhite;
+    }
+
+    &:active {
+      color: $fogWhite;
+      background: none;
+    }
+  }
+}
+
+.status {
+  margin: 40px auto 0;
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+
+  &_content {
+    display: flex;
+  }
+
+   &_item {
+     width: 100%;
+   }
+}
+
+.game {
+  font-family: 'Arial', sans-serif;
+  font-weight: lighter;
+  font-size: 0;
+  text-align: center;
+  margin: 10px auto 30px;
+  width: 100%;
+  overflow: scroll;
+  white-space: nowrap;
+
+  &_body {
+    margin: 0 auto;
+    border: 1px solid $fogWhite;
+    background: $fogWhite;
+
+    td {
+      display: inline-block;
+      transition: background .4s, color .4s, border .4s;
+      background: black;
+      width: 35px;
+      height: 35px;
+      line-height: 35px;
+      cursor: pointer;
+      touch-action: manipulation;
+
+      &:hover {
+        opacity: .7;
+      }
+
+      &.is-clear {
+        font-size: 18px;
+        background: $cloudGray;
+        cursor: default;
+
+        &:hover {
+          opacity: 1;
+        }
+
+        &.is-bomb {
+          background: $breakRed;
+
+          span {
+            position: relative;
+            display: block;
+            margin: 7px auto 0;
+            background: $breakRed;
+            border: 4px solid $fogWhite;
+            border-radius: 10px;
+            width: 20px;
+            height: 20px;
+
+            &::before {
+              position: absolute;
+              top: -3px;
+              left: 5px;
+              content: "";
+              background: $fogWhite;
+              width: 2px;
+              height: 18px;
+              transform: rotate(45deg);
+            }
+
+            &::after {
+              position: absolute;
+              top: -3px;
+              left: 5px;
+              content: "";
+              background: $fogWhite;
+              width: 2px;
+              height: 18px;
+              transform: rotate(-45deg);
+            }
+          }
+
+        }
+      }
+
+      @each $key, $color in $colors {
+        &.color#{$key} {
+          color: $color;
+        }
+      }
+
+      &.is-safe {
+        background: $warmOrange;
+
+        &::before {
+          content: "";
+          border: none;
+        }
+      }
+
+      &.is-selected {
+        opacity: .6;
+      }
+
+      &.is-flag {
+        position: relative;
+
+        &::before {
+          position: absolute;
+          content: "";
+          top: 6px;
+          left: 14px;
+          height: 0;
+          border-style: solid;
+          border-width: 7px 0 7px 16px;
+          border-color: transparent transparent transparent #ffffff;
+          width: 2px;
+          z-index: 1;
+        }
+
+        &::after {
+          position: absolute;
+          content: "";
+          top: 6px;
+          left: 10px;
+          background: white;
+          height: 24px;
+          width: 2px;
+          z-index: 1;
+        }
+      }
+    }
+
+    %nth-child {
+      background: $lightBlack;
+
+      &.is-clear {
+        background: none;
+
+        &.is-bomb {
+          background: $breakRed;
+        }
+      }
+
+      &.is-safe {
+        background: $shineYellow;
+
+        &::before {
+          content: "";
+          border: none;
+        }
+      }
+    }
+
+    tr:nth-child(odd) {
+      td:nth-child(odd) {
+        @extend %nth-child;
+      }
+    }
+
+    tr:nth-child(even) {
+      td:nth-child(even) {
+        @extend %nth-child;
+      }
+    }
+  }
+}
+
+.operation {
+  display: none;
+  position: fixed;
+  z-index: 1;
+
+  &_content{
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+
+    .el_btn {
+      display: block;
+      transition: background .2s, color .2s;
+      width: 100px;
+      padding: 4px 0;
+      margin: 10px 0;
+      text-align: center;
+      border: 1px solid black;
+      background: $fogWhite;
+      color: black;
+
+      &:hover {
+        border: 1px solid $fogWhite;
+        background: black;
+        color: $fogWhite;
+      }
+    }
+  }
+
+}
+
+.result {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 20px;
+
+  &_msg {
+
+    &.is-clear {
+      text-shadow: 0 0 3px $shineYellow;
+    }
+
+    &.is-over {
+      text-shadow: 0 0 3px $breakRed;
+    }
+  }
+}
+
+.newGame {
+  margin: 30px auto 50px;
+  text-align: center;
+
+  &_btn {
+    padding: 4px 20px;
+    border: 1px solid $fogWhite;
+    transition: background .2s, color .2s;
+    background: $fogWhite;
+    color: $lakeSurface;
+
+    &:hover {
+      color: $fogWhite;
+      background: none;
+    }
+
+    &:active {
+      color: $lakeSurface;
+      background: $fogWhite;
+    }
+  }
+}
