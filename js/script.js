@@ -7,6 +7,7 @@ let part = 'before'; // before playing after
 let clearCount = 0;
 let timer;
 let $selectedCell = '';
+let $firstCell;
 
 const $startBtn = $('#startBtn');
 const $statusF = $('#statusF');
@@ -23,7 +24,7 @@ $(function () {
 });
 
 function validateNumbers() {
-    $('#settings input').on('focusout', function () {
+    $('#settings input').on('input', function () {
         if (isStartBtnEnabled()) {
             $startBtn.prop('disabled', '');
         } else {
@@ -42,7 +43,7 @@ function onClickStart() {
 
 function isStartBtnEnabled() {
     setNumbers();
-    return width > 0 && height > 0 && bomb > 0 && bomb < width * height;
+    return width > 0 && height > 0 && bomb > 0 && bomb <= width * height - 9;
 }
 
 function setNumbers() {
@@ -61,15 +62,10 @@ function initGame() {
     $timerS.text('00');
     clearCount = 0;
     $gameBody.html('');
+    $firstCell = null;
 
-    let def = new $.Deferred().resolve();
-    def.promise().then(function () {
-        return buildGameBody();
-    }).then(function () {
-        return setBombs();
-    }).then(function () {
-        return countAroundBombs();
-    }).done(function () {
+    let pro = Promise.resolve(buildGameBody());
+    pro.then(function () {
         if (window.ontouchstart === null){
             onTouchCell();
             onTouchCancelBtn();
@@ -77,77 +73,77 @@ function initGame() {
         } else {
             onClickCell();
         }
-    }).fail(function () {
+    }).catch(function () {
         setNewGame();
     });
 }
 
 function buildGameBody() {
-    let funcTr = [];
+    let func = [];
     for (let i = 0; i < height; i++) {
-        let func = $gameBody.append('<tr></tr>');
-        funcTr.push(func);
+        func.push(appendTr());
     }
-    let def1 = $.when.apply($, funcTr);
-
     for (let i = 0; i < width; i++) {
-        def1.then(function () {
-            $('#gameBody tr').append('<td></td>');
-        })
+        func.push(appendTd());
     }
-
-    let def2 = new $.Deferred();
-    def1.done(function () {
-        def2.resolve();
-    }).fail(function () {
-        def2.reject();
-    });
-    return def2.promise()
+    Promise.all(func);
 }
 
-function setBombs() {
+function appendTr() {
+    new Promise((resolve) => {
+        $gameBody.append('<tr></tr>');
+        resolve(true);
+    })
+}
+
+function appendTd(){
+    new Promise((resolve) =>{
+        $('#gameBody tr').append('<td></td>');
+        resolve(true);
+    })
+}
+
+function setBombs($el) {
     let funcB = [];
     let bombIndexes = [];
+    let index = $('#gameBody td').index($el);
+    let excludeCells = getAroundCell(index);
+    excludeCells.push(index)
+
     while (bombIndexes.length < bomb) {
         let n = Math.floor(Math.random() * (width * height))
-        if ($.inArray(n, bombIndexes) === -1) {
-            let f = $('#gameBody td').eq(n).addClass('is-bomb').html('<span />');
-            funcB.push(f);
+
+        if ($.inArray(n, bombIndexes) === -1 && $.inArray(n, excludeCells) === -1) {
             bombIndexes.push(n);
+            funcB.push(addClassBom(n));
         }
     }
 
-    let def1 = $.when.apply($, funcB);
-    let def2 = new $.Deferred();
-    def1.done(function () {
-        def2.resolve();
-    }).fail(function () {
-        def2.reject();
-    });
-    return def2.promise()
+    Promise.all(funcB);
+}
+
+function addClassBom(n){
+    new Promise((resolve) =>{
+        $('#gameBody td').eq(n).addClass('is-bomb').html('<span />');
+        resolve(true);
+    })
 }
 
 function countAroundBombs() {
-    let def1 = new $.Deferred().resolve().promise();
-
+    let func = [];
     $('#gameBody td').each(function (index, el) {
-        let i = index;
-        let e = el;
-        def1.then((index = i, el = e) => {
-            setBombsCount($(el), getAroundCell(index));
-        });
+        let f = setBombsCount($(el), getAroundCell(index));
+        func.push(f);
     });
 
-    let def2 = new $.Deferred();
-    def1.done(function () {
-        def2.resolve();
-    }).fail(function () {
-        def2.reject();
-    });
-    return def2.promise()
+    Promise.all(func);
 }
 
 function setBombsCount($el, array) {
+    if($el.hasClass('is-bomb')){
+        return　Promise.resolve();
+    }
+
     let funcC = []
     let count = 0;
     $.each(array, function(){
@@ -157,13 +153,7 @@ function setBombsCount($el, array) {
         }
     });
 
-    let def1 = $.when.apply($, funcC);
-
-    def1.then(function (){
-        if($el.hasClass('is-bomb')){
-            return;
-        }
-
+    Promise.all(funcC).then(function (){
         if (count === 0) {
             $el.addClass('is-blank');
         } else {
@@ -171,14 +161,6 @@ function setBombsCount($el, array) {
             $el.addClass(color).text(count);
         }
     });
-
-    let def2 = new $.Deferred();
-    def1.done(function () {
-        def2.resolve();
-    }).fail(function () {
-        def2.reject();
-    });
-    return def2.promise()
 }
 
 function getAroundCell(index) {
@@ -318,6 +300,11 @@ function setFlag($el) {
 }
 
 function clearCell($el) {
+    if(!$firstCell){
+        firstClearCell($el);
+        return;
+    }
+
     if ($el.hasClass('is-flag')){
        return;
     }
@@ -331,6 +318,20 @@ function clearCell($el) {
     if ($el.hasClass('is-blank')) {
         clearBlanks($el);
     }
+}
+
+function firstClearCell($el){
+    $gameBody.css('pointer-events', 'none');
+    $firstCell = $el;
+
+    Promise.resolve(setBombs($el)).then(function () {
+        Promise.resolve(countAroundBombs()).then(function (){
+            clearCell($el);
+            $gameBody.css('pointer-events', 'auto');
+        }).catch(function () {
+            setNewGame();
+        });
+    });
 }
 
 function clearBlanks($el) {
