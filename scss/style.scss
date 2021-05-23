@@ -44,6 +44,7 @@ body {
   width: 100%;
   min-height: 100vh;
   background: black;
+  position: relative;
 
   @each $key, $back in $backgrounds {
     &.is-#{$key} {
@@ -137,6 +138,7 @@ h1 {
     padding: 4px 20px;
     border: 1px solid $fogWhite;
     transition: background .2s, color .2s;
+    opacity: 1;
 
     &:hover:not(:disabled) {
       color: black;
@@ -146,6 +148,10 @@ h1 {
     &:active {
       color: $fogWhite;
       background: none;
+    }
+
+    &:disabled {
+      opacity: .5;
     }
   }
 }
@@ -393,5 +399,38 @@ h1 {
       color: $lakeSurface;
       background: $fogWhite;
     }
+  }
+}
+
+.debug {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: none;
+
+  span {
+    position: relative;
+    transform: rotate(-45deg);
+    width: 60px;
+    display: block;
+    margin-top: 14px;
+
+    &::before {
+      position: absolute;
+      top: -18px;
+      left: -10px;
+      content: '';
+      z-index: -1;
+      transform: rotate(45deg);
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 90px 90px 0 0;
+      border-color: $breakRed transparent transparent transparent;
+    }
+    
+
   }
 }

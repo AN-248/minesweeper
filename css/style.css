@@ -8,6 +8,7 @@ body {
   width: 100%;
   min-height: 100vh;
   background: black;
+  position: relative;
 }
 body.is-night {
   background: #141418;
@@ -118,6 +119,7 @@ h1 {
   padding: 4px 20px;
   border: 1px solid #eee;
   transition: background .2s, color .2s;
+  opacity: 1;
 }
 .start_btn:hover:not(:disabled) {
   color: black;
@@ -126,6 +128,9 @@ h1 {
 .start_btn:active {
   color: #eee;
   background: none;
+}
+.start_btn:disabled {
+  opacity: .5;
 }
 
 .status {
@@ -343,6 +348,35 @@ h1 {
 .newGame_btn:active {
   color: #64bad2;
   background: #eee;
+}
+
+.debug {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: none;
+}
+.debug span {
+  position: relative;
+  transform: rotate(-45deg);
+  width: 60px;
+  display: block;
+  margin-top: 14px;
+}
+.debug span::before {
+  position: absolute;
+  top: -18px;
+  left: -10px;
+  content: '';
+  z-index: -1;
+  transform: rotate(45deg);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 90px 90px 0 0;
+  border-color: #ff8e68 transparent transparent transparent;
 }
 
 /*# sourceMappingURL=style.css.map */

@@ -8,6 +8,7 @@ let clearCount = 0;
 let timer;
 let $selectedCell = '';
 let $firstCell;
+let debug = false;
 
 const $startBtn = $('#startBtn');
 const $statusF = $('#statusF');
@@ -19,6 +20,7 @@ const $operation = $('#operation');
 
 $(function () {
     validateNumbers();
+    toggleDebug();
     onClickStart();
     onClickNewGame();
 });
@@ -29,6 +31,26 @@ function validateNumbers() {
             $startBtn.prop('disabled', '');
         } else {
             $startBtn.prop('disabled', 'disabled');
+        }
+    });
+}
+
+function toggleDebug() {
+    $(window).keydown(function(e){
+        if(event.shiftKey){
+            if(e.keyCode === 13){
+                if(part !== 'before') {
+                    return false;
+                }
+
+                debug = !debug;
+                if (debug){
+                    $('.debug').show();
+                } else {
+                    $('.debug').hide();
+                }
+                return false;
+            }
         }
     });
 }
@@ -124,7 +146,12 @@ function setBombs($el) {
 
 function addClassBom(n){
     new Promise((resolve) =>{
-        $('#gameBody td').eq(n).addClass('is-bomb').html('<span />');
+        $el = $('#gameBody td').eq(n);
+        $el.addClass('is-bomb').html('<span />');
+
+        if(debug) {
+            $el.addClass('is-clear');
+        }
         resolve(true);
     })
 }
@@ -306,7 +333,7 @@ function clearCell($el) {
     }
 
     if ($el.hasClass('is-flag')){
-       return;
+        return;
     }
 
     $el.addClass('is-clear');
